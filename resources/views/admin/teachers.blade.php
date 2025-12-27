@@ -11,24 +11,20 @@
     @endif
 
     {{-- Add Teacher --}}
-    <form action="{{ route('admin.teachers.store') }}" method="POST">
+    <form id="addTeacherForm" action="{{ route('admin.teachers.store') }}" method="POST" class="form-card">
         @csrf
+        <input type="text" name="name" placeholder="Teacher Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="course" placeholder="Course" required>
 
-        <input type="text" name="name" placeholder="Teacher Name" class="form-control mb-2" required>
-        <input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
-
-        <input type="text" name="course" placeholder="Course" class="form-control mb-2" required>
-
-        <!-- Faculty -->
-        <select name="faculty" class="form-control mb-2" required>
+        <select name="faculty" required>
             <option value="">Select Faculty</option>
             <option value="Management">Management</option>
             <option value="Science">Science</option>
             <option value="Humanities">Humanities</option>
         </select>
 
-        <!-- Program -->
-        <select name="program" class="form-control mb-2" required>
+        <select name="program" required>
             <option value="">Select Program</option>
             <option value="BIM">BIM</option>
             <option value="BCA">BCA</option>
@@ -36,8 +32,7 @@
             <option value="BSc CSIT">BSc CSIT</option>
         </select>
 
-        <!-- Semester -->
-        <select name="semester" class="form-control mb-2" required>
+        <select name="semester" required>
             <option value="">Select Semester</option>
             <option value="1">1st Semester</option>
             <option value="2">2nd Semester</option>
@@ -49,12 +44,11 @@
             <option value="8">8th Semester</option>
         </select>
 
-        <button type="submit" class="btn btn-success w-100">Add Teacher</button>
+        <button type="submit" class="btn btn-success">Add Teacher</button>
     </form>
 
-
     <h4 class="mt-4">Teacher List</h4>
-    <table class="table table-bordered">
+    <table class="teacher-table">
         <thead>
             <tr>
                 <th>Name</th>
@@ -62,26 +56,21 @@
                 <th>Action</th>
             </tr>
         </thead>
-
         <tbody>
             @foreach($teachers as $teacher)
             <tr>
                 <td>{{ $teacher->name }}</td>
                 <td>{{ $teacher->course }}</td>
                 <td>
-                    {{-- EDIT BUTTON --}}
-                    <button 
-                        class="btn btn-primary btn-sm"
-                        onclick="openEditModal({{ $teacher->id }}, '{{ $teacher->name }}', '{{ $teacher->course }}')"
-                    >
+                    <button class="btn btn-primary" 
+                        onclick="openEditModal({{ $teacher->id }}, '{{ $teacher->name }}', '{{ $teacher->course }}', '{{ $teacher->faculty }}', '{{ $teacher->program }}', '{{ $teacher->semester }}')">
                         Edit
                     </button>
 
-                    {{-- DELETE --}}
-                    <form action="{{ route('admin.teachers.delete', $teacher->id) }}" method="POST" style="display:inline;">
+                    <form action="{{ route('admin.teachers.delete', $teacher->id) }}" method="POST" class="inline-form">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                     </form>
                 </td>
             </tr>
@@ -91,72 +80,81 @@
 </div>
 
 {{-- ================= EDIT MODAL ================= --}}
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
 
-            <form id="editForm" method="POST">
-                @csrf
-                @method('PUT')
+        <form id="editForm" method="POST" class="form-card">
+            @csrf
+            @method('PUT')
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Teacher</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <input type="hidden" id="edit_id" name="id">
+            
+            <label>Name</label>
+            <input type="text" id="edit_name" name="name" required>
 
-                <div class="modal-body">
-                    <input type="hidden" id="edit_id">
+            <label>Course</label>
+            <input type="text" id="edit_course" name="course" required>
 
-                    <label>Name</label>
-                    <input type="text" id="edit_name" name="name" class="form-control mb-2">
+            <label>Faculty</label>
+            <select id="edit_faculty" name="faculty" required>
+                <option value="Management">Management</option>
+                <option value="Science">Science</option>
+                <option value="Humanities">Humanities</option>
+            </select>
 
-                
-                    <label>Course</label>
-                    <input type="text" id="edit_course" name="course" class="form-control mb-2">
+            <label>Program</label>
+            <select id="edit_program" name="program" required>
+                <option value="BIM">BIM</option>
+                <option value="BCA">BCA</option>
+                <option value="BBA">BBA</option>
+                <option value="BSc CSIT">BSc CSIT</option>
+            </select>
 
-                    <!-- Faculty -->
-                    <label>Faculty</label>
-                    <select name="faculty" id="edit_faculty" class="form-control mb-2" required>
-                        <option value="Management">Management</option>
-                        <option value="Science">Science</option>
-                        <option value="Humanities">Humanities</option>
-                    </select>
+            <label>Semester</label>
+            <select id="edit_semester" name="semester" required>
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+                <option value="3">3rd Semester</option>
+                <option value="4">4th Semester</option>
+                <option value="5">5th Semester</option>
+                <option value="6">6th Semester</option>
+                <option value="7">7th Semester</option>
+                <option value="8">8th Semester</option>
+            </select>
 
-                    <!-- Program -->
-                    <label>Program</label>
-                    <select name="program" id="edit_program" class="form-control mb-2" required>
-                        <option value="BIM">BIM</option>
-                        <option value="BCA">BCA</option>
-                        <option value="BBA">BBA</option>
-                        <option value="BSc CSIT">BSc CSIT</option>
-                    </select>
-
-                    <!-- Semester -->
-                    <label>Semester</label>
-                    <select name="semester" id="edit_semester" class="form-control mb-2" required>
-                        <option value="1">1st Semester</option>
-                        <option value="2">2nd Semester</option>
-                        <option value="3">3rd Semester</option>
-                        <option value="4">4th Semester</option>
-                        <option value="5">5th Semester</option>
-                        <option value="6">6th Semester</option>
-                        <option value="7">7th Semester</option>
-                        <option value="8">8th Semester</option>
-                    </select>
-
-                    
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Update</button>
-                </div>
-
-            </form>
-
-        </div>
+            <button type="submit" class="btn btn-success">Update</button>
+        </form>
     </div>
 </div>
+
+<style>
+/* ======= GENERAL ======= 
+body { font-family: 'Poppins', sans-serif; margin: 0; background:  #08eee2ff; color: #333; }*/
+.container { max-width: 900px; margin: 40px auto; padding: 20px; background: #e2ededff; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+
+/* ======= FORM ======= */
+.form-card { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.form-card input, .form-card select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+.form-card button { padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.btn-success { background-color: #28a745; color: #fff; }
+.btn-primary { background-color: #007bff; color: #fff; }
+.btn-danger { background-color: #dc3545; color: #fff; }
+.btn:hover { opacity: 0.9; }
+
+/* ======= TABLE ======= */
+.teacher-table { width: 100%; border-collapse: collapse; }
+.teacher-table th, .teacher-table td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+.teacher-table th { background-color: #007bff; color: #fff; }
+
+/* ======= INLINE FORM ======= */
+.inline-form { display: inline; }
+
+/* ======= MODAL ======= */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.modal-content { background-color: #fff; padding: 20px; border-radius: 10px; width: 400px; position: relative; }
+.close { position: absolute; top: 10px; right: 15px; font-size: 25px; font-weight: bold; cursor: pointer; }
+</style>
 
 <script>
 function openEditModal(id, name, course, faculty, program, semester) {
@@ -167,12 +165,20 @@ function openEditModal(id, name, course, faculty, program, semester) {
     document.getElementById('edit_program').value = program;
     document.getElementById('edit_semester').value = semester;
 
-    // Set FORM ACTION
     document.getElementById('editForm').action = "/admin/teachers/" + id + "/update";
+    
+    document.getElementById('editModal').style.display = 'flex';
+}
 
-    var modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Close modal on clicking outside
+window.onclick = function(event) {
+    if (event.target == document.getElementById('editModal')) {
+        closeEditModal();
+    }
 }
 </script>
-
 @endsection

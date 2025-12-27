@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Evaluation;
 use App\Models\Criteria;
+use App\Models\Student;
+
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -19,7 +21,7 @@ class AdminController extends Controller
 
 
         $teachers = Teacher::count();
-        $students = User::where('role', 'student')->count();
+        $students = Student::count();
         $evaluations = Evaluation::count();
         return view('admin.dashboard', compact('teachers', 'students', 'evaluations'));
     }
